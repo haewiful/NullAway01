@@ -133,7 +133,7 @@ public class GenericMethodTests extends NullAwayTestsBase {
   }
 
   @Test
-  @Ignore("requires inference of generic method type arguments")
+//  @Ignore("requires inference of generic method type arguments")
   public void genericMethodAndVoidTypeWithInference() {
     makeHelper()
         .addSourceLines(
@@ -193,6 +193,27 @@ public class GenericMethodTests extends NullAwayTestsBase {
             "      }",
             "    }")
         .doTest();
+  }
+
+  @Test
+  @Ignore("need inference")
+  public void issue1075() {
+    makeHelper()
+            .addSourceLines(
+                    "Test.java",
+                    "package com.uber;",
+                    "import org.jspecify.annotations.Nullable;",
+                    "import org.jspecify.annotations.NullMarked;",
+                    "    @NullMarked",
+                    "    class Foo {",
+                    "        public static class Key<T extends @Nullable Object> {}",
+                    "        private static final Key<@Nullable Foo> KEY = new Key();",
+                    "        public static <T extends @Nullable Object> void setValue(Key<T> key, T value) {}",
+                    "        public static void main() {",
+                    "            setValue(KEY, null);",
+                    "        }",
+                    "    }")
+            .doTest();
   }
 
   @Test
