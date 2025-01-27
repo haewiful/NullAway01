@@ -1021,8 +1021,12 @@ public final class GenericsChecks {
               if(state.getTypes().isSameType(typeParameters.get(i).type, paramTypes.get(j))){ // if parameter j is a generic method type parameter
 
                 // check nullness of the given argument
-//                ExpressionTree arg = arguments.get(j); // "null"
-//                Type argType = ASTHelpers.getType(arg); // <nulltype>
+                ExpressionTree arg = arguments.get(j); // "null"
+                Type argType = ASTHelpers.getType(arg); // <nulltype>
+                Nullness tn = getTypeNullness(argType, config);
+                if(tn == Nullness.NULLABLE) {
+                  System.out.println("HO");
+                }
 //                if(argType==null){}
 //                if(arguments.get(j) instanceof LiteralTree) {
 //                  LiteralTree literal = (LiteralTree) arguments.get(j);
