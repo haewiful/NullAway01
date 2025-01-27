@@ -987,11 +987,64 @@ public final class GenericsChecks {
               .getParameterTypes();
       // If this condition evaluates to false, we fall through to the subsequent logic, to handle
       // type variables declared on the enclosing class
-      if (substitutedParamTypes != null
-          && Objects.equals(
-              getTypeNullness(substitutedParamTypes.get(paramIndex), config), Nullness.NULLABLE)) {
-        return Nullness.NULLABLE;
+//      if (substitutedParamTypes != null
+//          && Objects.equals(
+//              getTypeNullness(substitutedParamTypes.get(paramIndex), config), Nullness.NULLABLE)) {
+//        return Nullness.NULLABLE;
+//      }
+
+      // just for debugging purpose
+      if (substitutedParamTypes != null) {
+          Type t = substitutedParamTypes.get(paramIndex);
+          Nullness tn = getTypeNullness(t, config);
+          if(Objects.equals(tn, Nullness.NULLABLE)) {
+            return Nullness.NULLABLE;
+          }
       }
+
+      // add any inferred types in cache if not added
+      if(!inferredTypes.containsKey(tree) && !invokedMethodSymbol.getTypeParameters().isEmpty()) { // there are type parameters
+        if (tree.getTypeArguments().isEmpty()) { // but no type arguments given
+
+          List<? extends com. sun. source. tree. ExpressionTree>      arguments = tree.getArguments(); // "null", "new MyVisitor()"
+          java. util. List<? extends com. sun. source. tree. Tree>    typeArguments = tree.getTypeArguments(); // ""
+          com.sun.tools.javac.util.List<Symbol.TypeVariableSymbol>    typeParameters = invokedMethodSymbol.getTypeParameters(); // "C"
+          com.sun.tools.javac.util.List<Symbol.VarSymbol>             parameters = invokedMethodSymbol.getParameters(); // "c", "visitor"
+          com.sun.tools.javac.util.List<Type>                         paramTypes = invokedMethodSymbol.type.getParameterTypes(); // "C", "Visitor<C>"
+
+          if(arguments == null || typeArguments == null || typeParameters==null || parameters==null || paramTypes==null) {}
+
+          Map<Type, Type> genericNullness = new HashMap<>();
+          for(int i=0 ;i<typeParameters.size(); i++) { // "C" => for each type parameters
+            for(int j=0 ;j<paramTypes.size(); j++) { // "C", "Visitor<C>" => for each parameter types
+              // if the parameter is a generic method parameter
+              if(state.getTypes().isSameType(typeParameters.get(i).type, paramTypes.get(j))){ // if parameter j is a generic method type parameter
+
+                // check nullness of the given argument
+//                ExpressionTree arg = arguments.get(j); // "null"
+//                Type argType = ASTHelpers.getType(arg); // <nulltype>
+//                if(argType==null){}
+//                if(arguments.get(j) instanceof LiteralTree) {
+//                  LiteralTree literal = (LiteralTree) arguments.get(j);
+//                  if(literal.getValue() == null) {
+//                    Type argType = ASTHelpers.getType(arg);
+//                    genericNullness.put(typeParameters.get(i).type, ); // C -> @Nullable nulltype
+//                  }
+//                }
+
+//                if(Objects.equals()) {
+//                  // infer the type parameter nullness
+//                  // add the inferred types to cache
+//                }
+              }
+            }
+          }
+          if(!genericNullness.isEmpty()) {
+            inferredTypes.put(tree, genericNullness);
+          }
+        }
+      }
+
       // check nullness of inferred types
       if (inferredTypes.containsKey(tree)) { // if in cache
         Map<Type, Type> genericNullness = inferredTypes.get(tree);
