@@ -294,13 +294,15 @@ public class NullnessAnnotationSerializer implements Plugin {
                 }
               }.scan(cu, null);
             } else if (e.getKind() == com.sun.source.util.TaskEvent.Kind.COMPILATION) {
-              Gson gson = new GsonBuilder().setPrettyPrinting().create();
-              String jsonFileName = "classes-" + UUID.randomUUID() + ".json";
-              Path p = Paths.get(outputDir, jsonFileName);
-              try {
-                Files.writeString(p, gson.toJson(moduleClasses));
-              } catch (IOException ex) {
-                throw new RuntimeException(ex);
+              if (!moduleClasses.isEmpty()) {
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                String jsonFileName = "classes-" + UUID.randomUUID() + ".json";
+                Path p = Paths.get(outputDir, jsonFileName);
+                try {
+                  Files.writeString(p, gson.toJson(moduleClasses));
+                } catch (IOException ex) {
+                  throw new RuntimeException(ex);
+                }
               }
             }
           }
